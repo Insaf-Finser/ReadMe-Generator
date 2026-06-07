@@ -128,6 +128,17 @@ export default function App() {
           </section>
         </main>
       )}
+      <a
+        className="built-by"
+        href="https://github.com/insaf-finser"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Built By Insaf Finser
+      </a>
     </div>
   )
 }
+
+// Signature component appended to the app root
+
