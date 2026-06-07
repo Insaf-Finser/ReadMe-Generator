@@ -1,12 +1,12 @@
-import { Check, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 const STEPS = [
-  'Fetching repository metadata',
-  'Scanning file tree',
-  'Reading key configuration files',
-  'Detecting tech stack',
-  'Running AI analysis',
-  'Generating README',
+  'Fetching repo',
+  'Scanning files',
+  'Reading configs',
+  'Detecting stack',
+  'Running AI',
+  'Writing README',
 ]
 
 interface LoadingStepsProps {
@@ -15,25 +15,19 @@ interface LoadingStepsProps {
 }
 
 export function LoadingSteps({ activeStep, useAI = false }: LoadingStepsProps) {
-  const steps = useAI ? STEPS : STEPS.filter((s) => s !== 'Running AI analysis')
+  const steps = useAI ? STEPS : STEPS.filter((s) => s !== 'Running AI')
+  const progress = ((activeStep + 1) / steps.length) * 100
 
   return (
-    <div className="loading-steps">
-      <h2 className="loading-title">
-        {useAI ? 'AI is analyzing the repository...' : 'Analyzing repository...'}
-      </h2>
-      <ul className="steps-list">
-        {steps.map((step, i) => {
-          const done = i < activeStep
-          const active = i === activeStep
-          return (
-            <li key={step} className={`step-item ${done ? 'step-done' : ''} ${active ? 'step-active' : ''}`}>
-              {done ? <Check size={16} /> : active ? <Loader2 size={16} className="spin" /> : <span className="step-dot" />}
-              {step}
-            </li>
-          )
-        })}
-      </ul>
+    <div className="loading">
+      <Loader2 size={28} className="spin loading-icon" />
+      <p className="loading-label">{steps[activeStep] ?? 'Done'}…</p>
+      <div className="loading-track">
+        <div className="loading-fill" style={{ width: `${progress}%` }} />
+      </div>
+      <p className="loading-step-count">
+        {activeStep + 1} / {steps.length}
+      </p>
     </div>
   )
 }

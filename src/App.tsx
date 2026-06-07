@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { FileText, Github, Pencil, RotateCcw, Scan } from 'lucide-react'
+import { ArrowLeft, Pencil, Sparkles } from 'lucide-react'
 import { analyzeRepo, type ScanOptions, type ScanSummary as ScanSummaryType } from './api'
 import { ReadmeForm } from './components/ReadmeForm'
 import { PreviewPanel } from './components/PreviewPanel'
@@ -24,12 +24,10 @@ export default function App() {
 
   useEffect(() => {
     if (view !== 'loading') return
-
     setLoadingStep(0)
     const interval = setInterval(() => {
       setLoadingStep((s) => (s < 5 ? s + 1 : s))
     }, 1200)
-
     return () => clearInterval(interval)
   }, [view])
 
@@ -38,7 +36,6 @@ export default function App() {
     setUseAI(Boolean(options.useAI))
     setView('loading')
     setLoadingStep(0)
-
     try {
       const result = await analyzeRepo(url, options)
       setSummary(result.summary)
@@ -60,40 +57,31 @@ export default function App() {
 
   return (
     <div className="app">
+      <div className="bg-grid" aria-hidden />
+
       <header className="header">
-        <div className="header-brand">
-          <div className="logo">
-            <FileText size={24} />
-          </div>
-          <div>
-            <h1 className="header-title">README Generator</h1>
-            <p className="header-subtitle">Scan any GitHub repo and auto-generate a README</p>
-          </div>
-        </div>
-        <div className="header-actions">
-          {view === 'result' && (
-            <button type="button" className="btn btn-ghost" onClick={reset}>
-              <RotateCcw size={16} />
-              New scan
-            </button>
-          )}
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-            <Github size={16} />
-            GitHub
-          </a>
-        </div>
+        <button type="button" className="wordmark" onClick={reset}>
+          readme<span className="wordmark-dot">.</span>gen
+        </button>
+        {view === 'result' && (
+          <button type="button" className="btn-text" onClick={reset}>
+            <ArrowLeft size={15} />
+            New
+          </button>
+        )}
       </header>
 
       {view === 'scan' && (
         <section className="hero">
-          <div className="hero-content">
-            <div className="hero-badge">
-              <Scan size={14} />
-              Repo-powered generation
-            </div>
-            <h2 className="hero-title">Turn any repository into a polished README</h2>
-            <p className="hero-desc">
-              We analyze your repo&apos;s file structure, dependencies, languages, CI setup, and more — then draft a complete README you can copy or download.
+          <div className="hero-inner">
+            <p className="hero-eyebrow">GitHub → README</p>
+            <h1 className="hero-title">
+              Your repo,
+              <br />
+              <em>documented.</em>
+            </h1>
+            <p className="hero-lead">
+              Paste a link. We scan the codebase and draft a README — aim, stack, setup, and all.
             </p>
             <RepoScanner onScan={handleScan} loading={false} error={error} />
           </div>
@@ -107,45 +95,39 @@ export default function App() {
       )}
 
       {view === 'result' && data && summary && (
-        <main className="main">
-          <aside className="form-panel">
-            <div className="panel-tabs">
+        <main className="workspace">
+          <aside className="sidebar">
+            <nav className="sidebar-nav">
               <button
                 type="button"
-                className={`panel-tab ${leftTab === 'summary' ? 'panel-tab-active' : ''}`}
+                className={`sidebar-tab ${leftTab === 'summary' ? 'active' : ''}`}
                 onClick={() => setLeftTab('summary')}
               >
-                <Scan size={16} />
-                Scan results
+                <Sparkles size={14} />
+                Scan
               </button>
               <button
                 type="button"
-                className={`panel-tab ${leftTab === 'edit' ? 'panel-tab-active' : ''}`}
+                className={`sidebar-tab ${leftTab === 'edit' ? 'active' : ''}`}
                 onClick={() => setLeftTab('edit')}
               >
-                <Pencil size={16} />
-                Edit README
+                <Pencil size={14} />
+                Edit
               </button>
+            </nav>
+            <div className="sidebar-body">
+              {leftTab === 'summary' ? (
+                <ScanSummary summary={summary} />
+              ) : (
+                <ReadmeForm data={data} onChange={setData} />
+              )}
             </div>
-            {leftTab === 'summary' ? (
-              <ScanSummary summary={summary} />
-            ) : (
-              <ReadmeForm data={data} onChange={setData} />
-            )}
           </aside>
-          <section className="preview-section">
+          <section className="preview-pane">
             <PreviewPanel markdown={markdown} />
           </section>
         </main>
       )}
-
-      <footer className="footer">
-        <p>
-          {view === 'result'
-            ? 'README generated from repository scan. Edit fields on the left to refine the output.'
-            : 'Scans public GitHub repositories via the GitHub API. Optional token increases rate limits.'}
-        </p>
-      </footer>
     </div>
   )
 }

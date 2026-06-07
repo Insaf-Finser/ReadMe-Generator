@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { Check, Copy, Download, Eye, FileCode } from 'lucide-react'
+import { Check, Copy, Download } from 'lucide-react'
 
 interface PreviewPanelProps {
   markdown: string
@@ -29,46 +29,34 @@ export function PreviewPanel({ markdown }: PreviewPanelProps) {
 
   return (
     <div className="preview-panel">
-      <div className="preview-toolbar">
-        <div className="tab-group">
-          <button
-            type="button"
-            className={`tab ${tab === 'preview' ? 'tab-active' : ''}`}
-            onClick={() => setTab('preview')}
-          >
-            <Eye size={16} />
+      <div className="preview-bar">
+        <div className="preview-tabs">
+          <button type="button" className={`preview-tab ${tab === 'preview' ? 'active' : ''}`} onClick={() => setTab('preview')}>
             Preview
           </button>
-          <button
-            type="button"
-            className={`tab ${tab === 'raw' ? 'tab-active' : ''}`}
-            onClick={() => setTab('raw')}
-          >
-            <FileCode size={16} />
-            Markdown
+          <button type="button" className={`preview-tab ${tab === 'raw' ? 'active' : ''}`} onClick={() => setTab('raw')}>
+            Raw
           </button>
         </div>
-        <div className="toolbar-actions">
-          <button type="button" className="btn btn-secondary btn-sm" onClick={copyToClipboard}>
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-            {copied ? 'Copied!' : 'Copy'}
+        <div className="preview-actions">
+          <button type="button" className="btn-ghost-sm" onClick={copyToClipboard}>
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+            {copied ? 'Copied' : 'Copy'}
           </button>
-          <button type="button" className="btn btn-primary btn-sm" onClick={download}>
-            <Download size={16} />
-            Download
+          <button type="button" className="btn-accent-sm" onClick={download}>
+            <Download size={14} />
+            Save
           </button>
         </div>
       </div>
 
-      <div className="preview-content">
+      <div className="preview-body">
         {tab === 'preview' ? (
           <article className="markdown-body">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
           </article>
         ) : (
-          <pre className="raw-markdown">
-            <code>{markdown}</code>
-          </pre>
+          <pre className="raw-md"><code>{markdown}</code></pre>
         )}
       </div>
     </div>
